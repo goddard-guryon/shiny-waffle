@@ -42,7 +42,7 @@ def linear_act_forward_with_dropout(A, W, b, act, kappa):
     return A, cache, D
 
 
-def linear_act_backward(dA, cache, act, kappa):
+def linear_act_backward(dA, cache, act):
     """
     Implements the linear and activation function derivatives of single node
     """
@@ -58,7 +58,7 @@ def linear_act_backward(dA, cache, act, kappa):
     return dA, dW, db
 
 
-def linear_act_backward(dA, cache, act):
+def linear_act_backward_with_dropout(dA, cache, act, kappa, dropouts):
     """
     Implements the linear and activation function derivatives of single node
     """
@@ -112,7 +112,6 @@ def backward_prop(AL: np.array, Y: np.array, caches: list) -> dict:
     # initialize variables
     gradients = {}
     L = len(caches)
-    m = AL.shape[1]
     Y = Y.reshape(AL.shape)
 
     # backprop over the sigmoid function
@@ -139,7 +138,7 @@ def backward_prop(AL: np.array, Y: np.array, caches: list) -> dict:
     return gradients
 
 
-def backward_prop_with_L2(AL: np.array, Y: np.array, caches: list, lamda: float) -> dict:
+def backward_prop_with_L2(AL: np.array, Y: np.array, caches: list, lamda: float, parameters) -> dict:
     """
     Implements the backward propagation function with L2 regularization
     """
@@ -208,14 +207,13 @@ def forward_prop_with_dropout(X: np.ndarray, parameters: dict, kappa: float) -> 
     return AL, caches, dropouts
 
 
-def backward_prop_with_dropouts(AL: np.array, Y: np.array, caches: list, kappa: float, dropouts: dict) -> dict:
+def backward_prop_with_dropout(AL: np.array, Y: np.array, caches: list, kappa: float, dropouts: dict) -> dict:
     """
     Implements the backward propagation function for whole neural network
     """
     # initialize variables
     gradients = {}
     L = len(caches)
-    m = AL.shape[1]
     Y = Y.reshape(AL.shape)
 
     # backprop over the sigmoid function
@@ -223,7 +221,7 @@ def backward_prop_with_dropouts(AL: np.array, Y: np.array, caches: list, kappa: 
 
     # backprop over linear function
     curr_cache = caches[-1]
-    dA, dW, db = linear_act_backward(dAL, curr_cache, "sigmoid")
+    dA, dW, db = linear_act_backward_with_dropout(dAL, curr_cache, "sigmoid", kappa, dropouts)
     gradients["dA" + str(L-1)] = (dA * dropouts['D' + str(L-1)]) / kappa
     gradients["dW" + str(L)] = dW
     gradients["db" + str(L)] = db
@@ -231,9 +229,9 @@ def backward_prop_with_dropouts(AL: np.array, Y: np.array, caches: list, kappa: 
     # backprop over all other layers
     for l in reversed(range(L-1)):
         curr_cache = caches[l]
-        dA, dW, db = linear_act_backward(gradients["dA" + str(l+1)],
+        dA, dW, db = linear_act_backward_with_dropout(gradients["dA" + str(l+1)],
                                          curr_cache,
-                                         "relu")
+                                         "relu", kappa, dropouts)
         gradients["dA" + str(l)] = (dA * dropouts['D' + str(l)]) / kappa
         gradients["dW" + str(l+1)] = dW
         gradients["db" + str(l+1)] = db

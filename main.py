@@ -13,7 +13,7 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
           num_epochs: int = 10000, batch_size: int = 64, print_cost: bool = False,
           initialization: str = "he", optimization: str = "adam",
           regularization: str = "none", alpha: float = 0.5, beta: float = 0.9,
-          gamma: float = 0.999, epsilon: int = 1e-8, lamda: float = 0.0,
+          gamma: float = 0.999, epsilon: int = 1e-8, lamda: float = 0.5,
           kappa: float = 0.5):
     """
     Initialize neural network model and fit to given data
@@ -35,9 +35,9 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
     """
     # initialize parameters
     costs = []
-    A = X_train
     tau = 0
     layers = [X_train.shape[0]] + layers + [1]
+    m = X_train.shape[1]
 
     if initialization == "random":
         parameters = initialize_random(layers)
@@ -46,7 +46,6 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
     else:
         parameters = initialize_zeros(layers)
 
-    L = len(parameters) // 2
 
     if optimization == "momentum":
         velocity = initialize_velocity(parameters)
@@ -76,11 +75,11 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
             if regularization == "L2":
                 total_cost += cost_with_L2(AL, parameters, y, lamda)
             else:
-                cost = cross_entropy_cost_mini(AL, y_train)
+                total_cost += cross_entropy_cost_mini(AL, y_train)
 
             # backward propagation
             if regularization == "L2":
-                gradients = backward_prop_with_L2(AL, y, cache, lamda)
+                gradients = backward_prop_with_L2(AL, y, cache, lamda, parameters)
             elif regularization == "dropout":
                 gradients = backward_prop_with_dropout(AL, y, cache, kappa, dropouts)
             else:
@@ -88,13 +87,14 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
 
             # update parameter values
             if optimization == "momentum":
-                parameters = update_parameters_with_momentum(parameters, gradients,
+                parameters, velocity = update_parameters_with_momentum(parameters, gradients,
                                                              velocity, alpha, beta)
             elif optimization == "rmsprop":
-                parameters = update_parameters_with_rms(parameters, gradients,
+                parameters, rms = update_parameters_with_rms(parameters, gradients,
                                                         rms, alpha, gamma)
             elif optimization == "adam":
-                parameters = update_parameters_with_adam(parameters, gradients,
+                tau += 1
+                parameters, velocity, rms = update_parameters_with_adam(parameters, gradients,
                                                          velocity, rms, alpha,
                                                          beta, gamma, epsilon, tau)
             else:
@@ -104,7 +104,7 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
             avg_cost = total_cost / m
 
             # print out some updates
-            if iter % 1000 == 0:
+            if epoch % 1000 == 0:
                 costs.append(avg_cost)
                 if print_cost:
                     print(f"Cost after {epoch}th epoch: {avg_cost}")
@@ -144,4 +144,4 @@ train_set_x, train_set_y, test_set_x, test_set_y, classes = load_dataset()
 train_set_x = train_set_x.reshape(train_set_x.shape[0], -1).T / 255
 test_set_x = test_set_x.reshape(test_set_x.shape[0], -1).T / 255
 
-model = my_nn([train_set_x.shape[0], 3, 4, 1], train_set_x, train_set_y, alpha=0.005, print_cost=True)
+model = my_nn([train_set_x.shape[0], 3, 4, 1], train_set_x, train_set_y, alpha=0.005, print_cost=True, regularization="L2")

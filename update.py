@@ -71,7 +71,7 @@ def update_parameters_with_adam(parameters: dict, gradients: dict, velocity: dic
         rms_cor["dW" + str(l+1)] = rms["dW" + str(l+1)] / (1 - gamma**tau)
         rms_cor["db" + str(l+1)] = rms["db" + str(l+1)] / (1 - gamma**tau)
 
-        parameters['W' + str(l+1)] -= alpha*velocity_cor["dW" + str(l+1)]/np.sqrt(rms_cor["dW" + str(l+1)] + epsilon)
-        parameters['b' + str(l+1)] -= alpha*velocity_cor["db" + str(l+1)]/np.sqrt(rms_cor["db" + str(l+1)] + epsilon)
+        parameters['W' + str(l+1)] -= alpha*velocity_cor["dW" + str(l+1)]/(np.sqrt(rms_cor["dW" + str(l+1)] + epsilon))
+        parameters['b' + str(l+1)] -= alpha*velocity_cor["db" + str(l+1)]/(np.sqrt(rms_cor["db" + str(l+1)] + epsilon))
 
     return parameters, velocity, rms

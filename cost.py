@@ -17,7 +17,7 @@ def cross_entropy_cost_mini(AL: np.array, Y: np.array) -> float:
     """
     Apply cross-entropy cost for mini-batch gradient desccent
     """
-    return np.sum(np.multply(-np.log(AL), Y) + np.multiply(-np.log(1-AL), (1-Y)))
+    return np.sum(np.multiply(-np.log(AL), Y) + np.multiply(-np.log(1-AL), (1-Y)))
 
 
 def cost_with_L2(AL: np.array, parameters: dict, Y: np.array, lamda: float) -> float:
