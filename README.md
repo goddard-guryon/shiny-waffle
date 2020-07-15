@@ -9,4 +9,4 @@ layers: a list of number of hidden units in the hidden layers you want to implem
 &gamma;: RMS parameter for RMSProp and Adam optimization (generally set to 0.999)<br>
 &delta;: learning rate decay parameter (generally set to 0.95). This algorithm works with the equation (&alpha; = &delta;<sup>epoch number</sup> x &alpha;<sub>0</sub>), so &delta; behaves chaotically between 0.9 and 1.<br>
 &epsilon;: Adam optimization parameter to prevent division by 0 (set to 10<sup>-8</sup>, you don't generally need to change this)<br>
-&lambda;: L2 regularization parameter (value needs to be set experimentally for each use case)<br>
+&lambda;: L2 regularization parameter (value needs to be set experimentally for each use case) (the parameter is named `lamda` because `lambda` is a reserved keyword in Python).<br>
