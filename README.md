@@ -1,2 +1,2 @@
 # shiny-waffle
-Simple neural network written in Python (currently coding)
+Simple neural network written in Python while studying the Deep Learning Specialization at Coursera. This (logistic regression) network also contains implementation of He initialization, L2 regularization, dropout regularization (which I haven't actually tested and am pretty sure doesn't work), along with Gradient descent with momentum, RMSProp and Adam optimization methods. Pay attention to the parameter notations used in the code (I prefer calling parameters \beta and \gamma instead of \beta<sub>1</sub> and \beta<sub>2</sub>).
