@@ -34,3 +34,9 @@ def cost_with_L2(AL: np.array, parameters: dict, Y: np.array, lamda: float) -> f
     cost = cross_entropy_cost_mini(AL, Y) + (lamda * buffer / (2 * m))
 
     return cost
+
+
+def softmax_cost(AL: np.array, Y: np.array) -> np.array:
+    """
+    """
+    return - np.sum(np.dot(Y, np.log(AL).T))

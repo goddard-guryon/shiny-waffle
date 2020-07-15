@@ -2,14 +2,13 @@ import numpy as np
 import sklearn.datasets as data
 import matplotlib.pyplot as plt
 from propagate import forward_prop
-from predict import predict
-from main import log_reg_waffle
+from main import make_waffle
+from predict import taste_waffle
 
 def load_dataset():
     np.random.seed(3)
     train_X, train_Y = data.make_moons(n_samples=300, noise=.2) #300 #0.2 
     # Visualize the data
-    plt.scatter(train_X[:, 0], train_X[:, 1], c=train_Y, s=40, cmap="viridis")
     train_X = train_X.T
     train_Y = train_Y.reshape((1, train_Y.shape[0]))
     
@@ -53,12 +52,14 @@ def plot_decision_boundary(model, X, y):
 
 
 X_train, y_train = load_dataset()
-layers = [3, 4, 2]
+layers = [6, 7, 8, 7, 6]
 
-model, costs = log_reg_waffle(layers, X_train, y_train, num_epochs=4000, alpha=0.005, print_cost=True, regularization="L2")
-preds = predict(X_train, y_train, model)
+model, costs = make_waffle(layers, X_train, y_train, num_epochs=4001, batch_size=128,
+                                alpha=0.0075, beta=0.85, gamma=0.99999, delta=0.9995, lamda=0.15,
+                                print_cost=True, regularization="L2")
+preds = taste_waffle(X_train, y_train, model)
 
-plt.title("Waffle with Adam optimization")
+plt.title("Moons Waffle with Adam optimization")
 axes = plt.gca()
 axes.set_xlim([-1.5,2.5])
 axes.set_ylim([-1,1.5])

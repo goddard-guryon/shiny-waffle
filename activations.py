@@ -32,3 +32,11 @@ def relu_backward(dA: np.ndarray, x: np.ndarray) -> float:
     dZ = np.array(dA, copy=True)
     dZ[x <= 0] = 0
     return dZ
+
+
+def softmax(x: np.ndarray) -> np.ndarray:
+    """
+    Applies the softmax activation function on given set
+    Also returns the original value to store in cache
+    """
+    return np.exp(x) / np.sum(np.exp(x)), x
