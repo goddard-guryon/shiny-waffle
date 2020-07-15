@@ -1,15 +1,16 @@
 import numpy as np
 from typing import Union, Optional
 import matplotlib.pyplot as plt
-from initialize import *
-from propagate import *
-from cost import *
-from update import *
-from predict import *
-from metrics import *
+import matplotlib.colors as col
+from initialize import mini_batches, initialize_adam, initialize_he, initialize_random, initialize_rms, initialize_velocity, initialize_zeros
+from propagate import forward_prop, forward_prop_with_dropout, backward_prop, backward_prop_with_dropout, backward_prop_with_L2
+from cost import cross_entropy_cost_mini, cost_with_L2
+from update import update_parameters, update_parameters_with_momentum, update_parameters_with_rms, update_parameters_with_adam
+from predict import predict
+from metrics import accuracy_score
 
 
-def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
+def nn_logis_regres(layers: list, X_train: np.ndarray, y_train: np.ndarray,
           num_epochs: int = 10000, batch_size: int = 64, print_cost: bool = False,
           initialization: str = "he", optimization: str = "adam",
           regularization: str = "none", alpha: float = 0.5, beta: float = 0.9,
@@ -35,7 +36,7 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
     """
     # initialize parameters
     costs = []
-    tau = 0
+    t = 0
     layers = [X_train.shape[0]] + layers + [1]
     m = X_train.shape[1]
 
@@ -93,55 +94,21 @@ def my_nn(layers: list, X_train: np.ndarray, y_train: np.ndarray,
                 parameters, rms = update_parameters_with_rms(parameters, gradients,
                                                         rms, alpha, gamma)
             elif optimization == "adam":
-                tau += 1
+                t += 1
                 parameters, velocity, rms = update_parameters_with_adam(parameters, gradients,
                                                          velocity, rms, alpha,
-                                                         beta, gamma, epsilon, tau)
+                                                         beta, gamma, epsilon, t)
             else:
                 parameters = update_parameters(parameters, gradients, alpha)
 
-            # check average cost
-            avg_cost = total_cost / m
+        # check average cost
+        avg_cost = total_cost / m
 
-            # print out some updates
-            if epoch % 1000 == 0:
-                costs.append(avg_cost)
-                if print_cost:
-                    print(f"Cost after {epoch}th epoch: {avg_cost}")
-
-    # plot the cost function's values
-    plt.plot(costs)
-    plt.xlabel("Epoch")
-    plt.ylabel("Cost Value")
-    plt.title(f"Learning Rate = {alpha}")
-    plt.show()
+        # print out some updates
+        if epoch % 1000 == 0:
+            costs.append(avg_cost)
+            if print_cost:
+                print(f"Cost after {epoch}th epoch: {avg_cost}")
 
     # return the important stuff
-    return parameters
-
-import h5py
-
-
-def load_dataset():
-    loc = "/home/vihangbodh/musical-broccoli/course_1/Week 2/Logistic Regression as a Neural Network/"
-    train_dataset = h5py.File(loc+'datasets/train_catvnoncat.h5', "r")
-    train_set_x_orig = np.array(train_dataset["train_set_x"][:]) # your train set features
-    train_set_y_orig = np.array(train_dataset["train_set_y"][:]) # your train set labels
-
-    test_dataset = h5py.File(loc+'datasets/test_catvnoncat.h5', "r")
-    test_set_x_orig = np.array(test_dataset["test_set_x"][:]) # your test set features
-    test_set_y_orig = np.array(test_dataset["test_set_y"][:]) # your test set labels
-
-    classes = np.array(test_dataset["list_classes"][:]) # the list of classes
-
-    train_set_y_orig = train_set_y_orig.reshape((1, train_set_y_orig.shape[0]))
-    test_set_y_orig = test_set_y_orig.reshape((1, test_set_y_orig.shape[0]))
-
-    return train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes
-
-
-train_set_x, train_set_y, test_set_x, test_set_y, classes = load_dataset()
-train_set_x = train_set_x.reshape(train_set_x.shape[0], -1).T / 255
-test_set_x = test_set_x.reshape(test_set_x.shape[0], -1).T / 255
-
-model = my_nn([train_set_x.shape[0], 3, 4, 1], train_set_x, train_set_y, alpha=0.005, print_cost=True, regularization="L2")
+    return parameters, costs

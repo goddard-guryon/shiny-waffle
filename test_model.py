@@ -1,0 +1,65 @@
+import numpy as np
+import sklearn.datasets as data
+import matplotlib.pyplot as plt
+from propagate import forward_prop
+from predict import predict
+from main import nn_logis_regres
+
+def load_dataset():
+    np.random.seed(3)
+    train_X, train_Y = data.make_moons(n_samples=300, noise=.2) #300 #0.2 
+    # Visualize the data
+    plt.scatter(train_X[:, 0], train_X[:, 1], c=train_Y, s=40, cmap="viridis")
+    train_X = train_X.T
+    train_Y = train_Y.reshape((1, train_Y.shape[0]))
+    
+    return train_X, train_Y
+
+
+def predict_dec(parameters, X):
+    """
+    Used for plotting decision boundary.
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters 
+    X -- input data of size (m, K)
+    
+    Returns
+    predictions -- vector of predictions of our model (red: 0 / blue: 1)
+    """
+    
+    # Predict using forward propagation and a classification threshold of 0.5
+    a3, _ = forward_prop(X, parameters)
+    predictions = (a3 > 0.5)
+    return predictions
+
+
+def plot_decision_boundary(model, X, y):
+    # Set min and max values and give it some padding
+    x_min, x_max = X[0, :].min() - 1, X[0, :].max() + 1
+    y_min, y_max = X[1, :].min() - 1, X[1, :].max() + 1
+    h = 0.01
+    # Generate a grid of points with distance h between them
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    # Predict the function value for the whole grid
+    Z = model(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    # Plot the contour and training examples
+    plt.contourf(xx, yy, Z, cmap="viridis")
+    plt.ylabel('x2')
+    plt.xlabel('x1')
+    plt.scatter(X[0, :], X[1, :], c=y[0], cmap="rainbow_r", alpha=0.5)
+    plt.show()
+
+
+X_train, y_train = load_dataset()
+layers = [3, 4, 2]
+
+model, costs = nn_logis_regres(layers, X_train, y_train, num_epochs=4000, alpha=0.005, print_cost=True, regularization="L2")
+preds = predict(X_train, y_train, model)
+
+plt.title("Model with Adam optimization")
+axes = plt.gca()
+axes.set_xlim([-1.5,2.5])
+axes.set_ylim([-1,1.5])
+plot_decision_boundary(lambda x: predict_dec(model, x.T), X_train, y_train)
