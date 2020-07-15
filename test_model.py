@@ -3,7 +3,7 @@ import sklearn.datasets as data
 import matplotlib.pyplot as plt
 from propagate import forward_prop
 from predict import predict
-from main import nn_logis_regres
+from main import log_reg_waffle
 
 def load_dataset():
     np.random.seed(3)
@@ -55,10 +55,10 @@ def plot_decision_boundary(model, X, y):
 X_train, y_train = load_dataset()
 layers = [3, 4, 2]
 
-model, costs = nn_logis_regres(layers, X_train, y_train, num_epochs=4000, alpha=0.005, print_cost=True, regularization="L2")
+model, costs = log_reg_waffle(layers, X_train, y_train, num_epochs=4000, alpha=0.005, print_cost=True, regularization="L2")
 preds = predict(X_train, y_train, model)
 
-plt.title("Model with Adam optimization")
+plt.title("Waffle with Adam optimization")
 axes = plt.gca()
 axes.set_xlim([-1.5,2.5])
 axes.set_ylim([-1,1.5])

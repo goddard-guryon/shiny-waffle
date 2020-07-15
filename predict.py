@@ -14,5 +14,5 @@ def predict(X, y, parameters):
         else:
             preds[0, i] = 0
     
-    print(f"Given model made prediction with {accuracy_score(preds, y):.3f}% accuracy")
+    print(f"Given waffle made prediction with {accuracy_score(preds, y):.3f}% accuracy")
     return preds

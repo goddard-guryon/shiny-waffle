@@ -10,7 +10,7 @@ from predict import predict
 from metrics import accuracy_score
 
 
-def nn_logis_regres(layers: list, X_train: np.ndarray, y_train: np.ndarray,
+def log_reg_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
           num_epochs: int = 10000, batch_size: int = 64, print_cost: bool = False,
           initialization: str = "he", optimization: str = "adam",
           regularization: str = "none", alpha: float = 0.5, beta: float = 0.9,
@@ -68,7 +68,7 @@ def nn_logis_regres(layers: list, X_train: np.ndarray, y_train: np.ndarray,
             X, y = batch
             # forward propagation
             if regularization == "dropout":
-                AL, cache, dropouts =forward_prop_with_dropout(X, parameters, kappa)
+                AL, cache, dropouts = forward_prop_with_dropout(X, parameters, kappa)
             else:
                 AL, cache = forward_prop(X, parameters)
 
