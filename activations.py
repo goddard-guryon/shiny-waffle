@@ -39,4 +39,4 @@ def softmax(x: np.ndarray) -> np.ndarray:
     Applies the softmax activation function on given set
     Also returns the original value to store in cache
     """
-    return np.exp(x) / np.sum(np.exp(x)), x
+    return np.exp(x - np.max(x)) / np.exp(x - np.max(x)).sum(axis=0), x

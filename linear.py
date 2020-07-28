@@ -40,7 +40,7 @@ def linear_act_backward(dA, cache, act):
     return dA, dW, db
 
 
-def forward_prop(X: np.ndarray, parameters: dict, softmax: bool = False) -> tuple:
+def lin_forward_prop(X: np.ndarray, parameters: dict, softmax: bool = False) -> tuple:
     """
     Implements the forward propagation function for whole neural network
     """
@@ -77,7 +77,7 @@ def forward_prop(X: np.ndarray, parameters: dict, softmax: bool = False) -> tupl
     return AL, caches
 
 
-def backward_prop(AL: np.array, Y: np.array, caches: list, softmax: bool) -> dict:
+def lin_backward_prop(AL: np.array, Y: np.array, caches: list, softmax: bool) -> dict:
     """
     Implements the backward propagation function for whole neural network
     """
@@ -113,7 +113,7 @@ def backward_prop(AL: np.array, Y: np.array, caches: list, softmax: bool) -> dic
     return gradients
 
 
-def backward_prop_with_L2(AL: np.array, Y: np.array, caches: list, lamda: float, parameters, softmax: bool) -> dict:
+def lin_backward_prop_with_L2(AL: np.array, Y: np.array, caches: list, lamda: float, parameters, softmax: bool) -> dict:
     """
     Implements the backward propagation function with L2 regularization
     """

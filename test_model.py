@@ -1,7 +1,7 @@
 import numpy as np
 import sklearn.datasets as data
 import matplotlib.pyplot as plt
-from propagate import forward_prop
+from linear import lin_forward_prop
 from main import make_waffle
 from predict import taste_waffle
 
@@ -28,7 +28,7 @@ def predict_dec(parameters, X):
     """
     
     # Predict using forward propagation and a classification threshold of 0.5
-    a3, _ = forward_prop(X, parameters)
+    a3, _ = lin_forward_prop(X, parameters)
     predictions = (a3 > 0.5)
     return predictions
 
