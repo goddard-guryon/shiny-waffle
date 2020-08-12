@@ -3,7 +3,7 @@ from typing import Union, Optional
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
 from initialize import mini_batches, initialize_adam, initialize_he, initialize_random, initialize_rms, initialize_velocity, initialize_zeros
-from propagate import forward_prop, backward_prop, backward_prop_with_L2
+from linear import lin_forward_prop, lin_backward_prop, lin_backward_prop_with_L2
 from cost import cross_entropy_cost_mini, cost_with_L2
 from update import update_parameters, update_parameters_with_momentum, update_parameters_with_rms, update_parameters_with_adam
 from draw import draw_neural_net
@@ -77,7 +77,7 @@ def make_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
             X, y = batch
 
             # forward propagation
-            AL, cache = forward_prop(X, parameters, softmax)
+            AL, cache = lin_forward_prop(X, parameters, softmax)
 
             # compute cost value
             if regularization == "L2":
@@ -87,9 +87,9 @@ def make_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
 
             # backward propagation
             if regularization == "L2":
-                gradients = backward_prop_with_L2(AL, y, cache, lamda, parameters, softmax)
+                gradients = lin_backward_prop_with_L2(AL, y, cache, lamda, parameters, softmax)
             else:
-                gradients = backward_prop(AL, y, cache, softmax)
+                gradients = lin_backward_prop(AL, y, cache, softmax)
 
             # update parameter values
             if optimization == "momentum":
@@ -125,3 +125,16 @@ def make_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
 
     # return the important stuff
     return parameters, costs
+
+
+
+class Waffle():
+    def __init__(self):
+        self.layers = []
+        self.parameters = {}
+        self.costs = {}
+    
+    def recipe(self, recipe: dict):
+        for type, layer in recipe.items:
+            if type == "liege":
+                pass
