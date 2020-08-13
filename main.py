@@ -7,7 +7,7 @@ from initialize import mini_batches, initialize_adam, initialize_he, initialize_
 from linear import lin_forward_prop, lin_backward_prop, lin_backward_prop_with_L2
 from cost import cross_entropy_cost_mini, cost_with_L2
 from update import update_parameters, update_parameters_with_momentum, update_parameters_with_rms, update_parameters_with_adam
-from draw import draw_neural_net
+from draw import DrawNN
 
 
 def make_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
@@ -118,11 +118,8 @@ def make_waffle(layers: list, X_train: np.ndarray, y_train: np.ndarray,
 
     # let's show how the model looks
     if print_cost:
-        fig = plt.figure(figsize=(12, 12))
-        ax = fig.gca()
-        draw_neural_net(ax, 0.05, 0.95, 1, 0, layers)
-        plt.title(f"Your {len(layers)}-layer NN waffle (^ᴗ^)")
-        plt.show()
+        network = DrawNN([20] + layers[1:])
+        network.draw()
 
     # return the important stuff
     return parameters, costs
@@ -154,13 +151,39 @@ class Waffle():
     
 
     @staticmethod
-    def add_dense_layer(size):
+    def add_dense_layer(params, prev_params):
         # return a dense layer with given parameters
-        NotImplemented
+        if "initialization" in params:
+
+            # if user provided initialization parameters, use it
+            if params["initialization"] == "zeros":
+                return initialize_zeros([prev_params, params["size"]])
+            elif params["initialization"] == "random":
+                return initialize_random([prev_params, params["size"]])
+            elif params["initialization"] == "he":
+                return initialize_he([prev_params, params["size"]])
+            
+            # wow, you provided invalid initialization values
+            else:
+            
+                # just mention that the user made a mistake
+                print(f"Invalid initialization type: {params['initialization']}")
+
+                # the code will crash somewhere else
+                return None
+        else:
+
+            # user didn't provide any value, default to He initialization
+            return initialize_he([prev_params, params["size"]])
 
     @staticmethod
     def add_conv_layer(kernel, stride):
         # return a convolutional layer with given parameters
+        NotImplemented
+    
+    @staticmethod
+    def add_pool_layer(params, prev_params):
+        # return a pooling layer with given parameters
         NotImplemented
 
     @staticmethod
@@ -185,48 +208,70 @@ class Waffle():
         Add the given waffle recipe to Waffle properties
         The recipe should be provided as:
         recipe = [
-            {"input": SIZE OF DATASET},
-            {"liege": SIZE OF DENSE LAYER},
+            {
+                "type": "input"
+                "size": SIZE OF DATASET},
+            {
+                "type": "liege"
+                "size": SIZE OF DENSE LAYER,
+                "initialization": defaults to He initialization")},
             {"krumkake": [CONV LAYER KERNEL SIZE, STRIDE SIZE]},
             {"stroopwafel": [RECC LAYER PARAMETERS]},
             {"honingwafel": [LSTM LAYER PARAMETERS]},
             {"pizelle": FUNCTION FOR MODULAR LAYER},
-            {"output": SIZE OF OUTPUT LAYER}
+            {
+                "type": "output",
+                "mode": SIGMOID/SOFTMAX,
+                "size": SIZE OF OUTPUT LAYER (defaults to 1 if mode is sigmoid)}
         ]
         """
         for num, ingredient in enumerate(recipe[1:]):  # assuming the first entry is input layer
             # to make the code cleaner
-            name, params = ingredient.items()
+            layer = ingredient["type"]
+            prev_params = recipe[num-1]["size"]
             
             # add dense layer
-            if name == "liege":
-                self.layers.append(self.add_dense_layer(params))
+            if layer == "liege":
+                self.layers.append({
+                    "Layer": num + 1,
+                    "Type": "Liege",
+                    "parameters": self.add_dense_layer(ingredient, prev_params)})
             
             # add convolutional layer
-            elif name == "krumkake":
+            elif layer == "krumkake":
                 self.layers.append(self.add_conv_layer(params[0], params[1]))
             
+            # add pooling layer
+            elif layer == "cone":
+                self.layers.append(self.add_pool_layer(ingredient, prev_params))
+            
             # add simple recurrent layer
-            elif name == "stroopwafel":
+            elif layer == "stroopwafel":
                 self.layers.add(self.add_rnn_layer(params))
             
             # add LSTM recurrent layer
-            elif name == "honingwafel":
+            elif layer == "honingwafel":
                 self.layers.append(self.add_lstm_layer(params))
             
             # add a modular layer
-            elif name == "pizelle":
+            elif layer == "pizelle":
                 self.layers.append(self.add_mod_layer(params))
             
             # add the output layer
-            elif name == "output":
+            elif layer == "output":
                 # you want a single output, we'll add a sigmoid layer
-                if params == 1:
-                    self.layers.append(sigmoid())
+                if ingredient["mode"] == "sigmoid":
+                    self.layers.append({
+                        "Layer": "Output",
+                        "Mode": "Sigmoid",
+                        "Parameters": '_'})
                 
                 # just making sure you didn't give invalid values
-                elif params > 1:
-                    self.layers.append(softmax())
+                elif ingredient["mode"] == "softmax" and ingredient["size"] > 1:
+                    self.layers.append({
+                        "Layer": "Output",
+                        "Mode": "Softmax",
+                        "Parameters": '_'})
                 
                 # so you did give invalid output size
                 else:
@@ -302,6 +347,31 @@ class Waffle():
         """
         self.layers = []
     
-    def __print__(self):
+    def __repr__(self):
         # Get a glimpse of your waffle
-        NotImplemented
+        # DrawNN([20] + self.layers[1:]).draw()
+        layers = []
+        for layer in self.layers:
+            layers.append(str(layer))
+        return "\n".join(layers)
+
+
+model = Waffle()
+model.recipe([
+    {
+        "type": "input",
+        "size": 20},
+    {
+        "type": "liege",
+        "size": 5,
+        "initialization": "he"},
+    {
+        "type": "liege",
+        "size": 7,
+        "initialization": "random"},
+    {
+        "type": "output",
+        "mode": "sigmoid",
+        "size": 1}
+])
+print(model)

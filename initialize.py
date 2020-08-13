@@ -11,8 +11,8 @@ def initialize_zeros(layers: np.array) -> dict:
 
     # create parameters
     for l in range(1, len(layers)):
-        parameters['W' + str(l)] = np.zeros((layers[l], layers[l-1]))
-        parameters['b' + str(l)] = np.zeros((layers[l], 1))
+        parameters['W'] = np.zeros((layers[l], layers[l-1]))
+        parameters['b'] = np.zeros((layers[l], 1))
 
     return parameters
 
@@ -27,8 +27,8 @@ def initialize_random(layers: np.array) -> dict:
 
     # start creating parameters
     for l in range(1, len(layers)):
-        parameters['W' + str(l)] = np.random.randn(layers[l], layers[l-1]) * .01
-        parameters['b' + str(l)] = np.zeros((layers[l], 1))
+        parameters['W'] = np.random.randn(layers[l], layers[l-1]) * .01
+        parameters['b'] = np.zeros((layers[l], 1))
 
     return parameters
 
@@ -45,8 +45,8 @@ def initialize_he(layers: np.array) -> dict:
     # start creating parameters
     for l in range(1, len(layers)):
         x = np.sqrt(2. / layers[l-1])
-        parameters['W' + str(l)] = np.random.randn(layers[l], layers[l-1]) * x
-        parameters['b' + str(l)] = np.zeros((layers[l], 1))
+        parameters['W'] = np.random.randn(layers[l], layers[l-1]) * x
+        parameters['b'] = np.zeros((layers[l], 1))
 
     return parameters
 
