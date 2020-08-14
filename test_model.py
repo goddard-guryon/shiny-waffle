@@ -1,8 +1,8 @@
 import numpy as np
 import sklearn.datasets as data
 import matplotlib.pyplot as plt
-from linear import lin_forward_prop
-from main import make_waffle
+from forward_prop import linear_forward
+from Waffle import quickWaffle
 from predict import taste_waffle
 
 def load_dataset():
@@ -28,7 +28,7 @@ def predict_dec(parameters, X):
     """
     
     # Predict using forward propagation and a classification threshold of 0.5
-    a3, _ = lin_forward_prop(X, parameters)
+    a3, _ = linear_forward(X, parameters)
     predictions = (a3 > 0.5)
     return predictions
 
@@ -54,7 +54,7 @@ def plot_decision_boundary(model, X, y):
 X_train, y_train = load_dataset()
 layers = [6, 7, 8, 7, 6]
 
-model, costs = make_waffle(layers, X_train, y_train, num_epochs=4001, batch_size=128,
+model, costs = quickWaffle(layers, X_train, y_train, num_epochs=4001, batch_size=128,
                                 alpha=0.0075, beta=0.85, gamma=0.99999, delta=0.9995, lamda=0.15,
                                 print_cost=True, regularization="L2")
 preds = taste_waffle(X_train, y_train, model)

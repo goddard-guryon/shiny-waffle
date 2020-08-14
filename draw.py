@@ -1,3 +1,11 @@
+"""
+Code author: Oliver Wilken (https://stackoverflow.com/a/37366154)
+Added features: 
+    - Display annotation on hovering on a neuron
+    - Display convolutional, recurrent, pooling & modular layers
+      in a different style
+"""
+
 from matplotlib import pyplot as plt
 from math import sin, cos, atan
 
